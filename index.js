@@ -182,7 +182,7 @@ export async function handler(event) {
             };
             return response;
         } else {
-            let comment = `Não foi possível adicionar o andamento de revisão às pastas ${workingFolders.map(x => x.title).join(', ')}. ${response.content}.`;
+            let comment = `Não foi possível adicionar o andamento de revisão à(s) pasta(s) ${workingFolders.map(x => x.title).join(', ')}. ${response.content}.`;
             comment = taksCommentQuote.replace("replaceWithComment", comment);
             if (errorCount > 0) {
                 comment += `\nOcoreram os seguintes erros na inclusão do andamento de revisão. \n${newComments.join('\n')}`;
