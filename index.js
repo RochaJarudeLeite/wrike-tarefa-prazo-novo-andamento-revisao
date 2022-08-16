@@ -9,13 +9,14 @@ const reProcFolderGlobal = /(?<folder>Proc-\d{7}\/\d+|Proc-\d{7})/g
 const reAndamentoRevisãoMarker = /(\s?AR\s?\:|\s?Andamento de Revisão\s?\:|\s?Revisão\s?\:)(?<content>.*)/
 
 export async function handler(event) {
+    let response;
     let sns = event.Records[0].Sns;
     let message = sns.Message;
     let messageJson = JSON.parse(message);
     console.log(messageJson);
     if (messageJson[0].eventType !== 'CommentAdded' || !reAndamentoRevisãoMarker.test(messageJson[0].comment.text) || messageJson[0].comment.html.includes('blockquote')) {
         console.log("Skipped");
-        let response = {
+        response = {
             statusCode: 200,
             body: JSON.stringify('Skipped'),
         };
@@ -33,7 +34,7 @@ export async function handler(event) {
     let TaskCommentContent = taskCommentMatch.groups.content;
     TaskCommentContent = TaskCommentContent.replace(reProcFolderWrongNotation, '$1/$2');
     console.log("Getting Wrike Task.")
-    let response = await Wrike.getTask(taskId);
+    response = await Wrike.getTask(taskId);
     if (!response.success) {
         let comment = `🤖 RJL-Bot: Não foi possível obter os dados da tarefa para rodar a automação de novo andamento de revisão. Erro: ${response.message}`;
         comment = taksCommentQuote.replace("replaceWithComment", comment);
@@ -58,7 +59,7 @@ export async function handler(event) {
                 taskCommentLitigations.map(async (commentLitigation) => {
                     let folderTitle = commentLitigation.groups.folder;
                     folderTitle = folderTitle.replace(/[\s_]/g, '-');
-                    let response = await Wrike.searchFolder(folderTitle);
+                    response = await Wrike.searchFolder(folderTitle);
                     if (response.success) {
                         wrikeTaskParentIds.push(response.id);
                     }
@@ -71,7 +72,7 @@ export async function handler(event) {
         wrikeTaskParentIds = wrikeTask.parentIds;
     }
     for (let i = 0; i < wrikeTaskParentIds.length; i++) {
-        let response = await Wrike.getFolder(wrikeTaskParentIds[i]);
+        response = await Wrike.getFolder(wrikeTaskParentIds[i]);
         if (response.success && response.data.title.startsWith('Proc-')) {
             foundFolders++;
             let folderData = response.data;
@@ -103,7 +104,7 @@ export async function handler(event) {
         if (!response.success) {
             console.log(response.message);
         }
-        let response = {
+        response = {
             statusCode: 200,
             body: JSON.stringify('Error'),
         };
@@ -118,7 +119,7 @@ export async function handler(event) {
             console.log(response.message);
         }
         console.log("Skipped");
-        let response = {
+        response = {
             statusCode: 200,
             body: JSON.stringify('Skipped'),
         };
@@ -128,7 +129,7 @@ export async function handler(event) {
     // for each workingFolder with novajusId = null, get the novajusId from LegalOne
     for (let i = 0; i < workingFolders.length; i++) {
         if (workingFolders[i].novajusId === null) {
-            let response = await LO.getLitigationsByCNJOrFolder(workingFolders[i].title);
+            response = await LO.getLitigationsByCNJOrFolder(workingFolders[i].title);
             if (response.success) {
                 let foundId = response.id;
                 workingFolders[i].novajusId = foundId;
@@ -168,7 +169,7 @@ export async function handler(event) {
     }
 
     if (newLitigationUpdatePayload.relationships.length > 0) {
-        let response = await LO.newLitigationUpdate(newLitigationUpdatePayload);
+        response = await LO.newLitigationUpdate(newLitigationUpdatePayload);
         if (response.success) {
             let newUpdateId = response.id;
             let comment = `🤖 RJL-Bot: Andamento de revisão adicionado às pastas ${workingFolders.map(x => x.title).join(', ')}.\n <a href="https://rj.novajus.com.br/processos/andamentos/details/${newUpdateId}?parentId=${workingFolders[0].novajusId}" >Ver Andamento</a>`;
