@@ -1,0 +1,37 @@
+name: deploy to lambda
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    name: deploy lambda function
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.0
+      - name: Install Dependencies with Apt Get
+        run: sudo apt-get update
+      - uses: actions/setup-node@v2 # --> To Setup the Server With Node Env
+        with:
+          node-version: '16' #--> Specify the Version of the Nod
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1 #--> Setup the Credential for the AWS cli
+        with:
+          # Created the Secrets Under the Repo only with These Variables
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }} #--> Define Region of the AWS-CLI
+      - name: npm install
+        env:
+          CI: true
+        run: |
+          npm ci
+      - name: ZIP
+        uses: papeloto/action-zip@v1
+        with:
+          files: .
+          recursive: true
+          dest: lambda.zip
+      - name: deploy
+        run: |
+          aws lambda update-function-code --function-name=wrike-tarefa-prazo-novo-andamento-revisao --zip-file=fileb://lambda.zip
