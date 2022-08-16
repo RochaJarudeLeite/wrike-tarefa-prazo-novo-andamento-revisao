@@ -4,6 +4,7 @@ import * as Wrike from './WrikeService.js';
 import * as v from 'validate-cnj'
 
 const reProcFolder = /(?<folder>Proc-\d{7}\/\d+|Proc-\d{7})/
+const reProcFolderWrongNotation = /(Proc-\d{7})_(\d+)/g
 const reProcFolderGlobal = /(?<folder>Proc-\d{7}\/\d+|Proc-\d{7})/g
 const reAndamentoRevisãoMarker = /(\s?AR\s?\:|\s?Andamento de Revisão\s?\:|\s?Revisão\s?\:)(?<content>.*)/
 
@@ -30,6 +31,7 @@ export async function handler(event) {
     let taksCommentQuote = `<blockquote data-user="${taskCommentAutorId}" data-entryid="${taskCommentId}" data-entrytype="comment" data-date="${new Date(taskCommentTimestamp).getTime()}">${messageJson[0].comment.text}</blockquote>replaceWithComment<a rel="${taskCommentAutorId}"></a>`
     let getContactResult = Wrike.getContact(taskCommentAutorId);
     let TaskCommentContent = taskCommentMatch.groups.content;
+    TaskCommentContent = TaskCommentContent.replace(reProcFolderWrongNotation, '$1/$2');
     console.log("Getting Wrike Task.")
     let response = await Wrike.getTask(taskId);
     if (!response.success) {
