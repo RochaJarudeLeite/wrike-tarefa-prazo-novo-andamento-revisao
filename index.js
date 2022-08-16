@@ -29,6 +29,7 @@ export async function handler(event) {
     let taksCommentQuote = `<blockquote data-user="${taskCommentAutorId}" data-entryid="${taskCommentId}" data-entrytype="comment" data-date="${new Date(taskCommentTimestamp).getTime()}">${messageJson[0].comment.text}</blockquote>replaceWithComment<a rel="${taskCommentAutorId}"></a>`
     let getContactResult = Wrike.getContact(taskCommentAutorId);
     let TaskCommentContent = taskCommentMatch.groups.content;
+    console.log("Getting Wrike Task.")
     let response = await Wrike.getTask(taskId);
     if (!response.success) {
         let comment = `Não foi possível obter os dados da tarefa para rodar a automação de novo andamento de revisão. Erro: ${response.message}`;
