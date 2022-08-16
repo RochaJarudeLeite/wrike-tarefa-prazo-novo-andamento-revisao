@@ -33,7 +33,7 @@ export async function handler(event) {
     console.log("Getting Wrike Task.")
     let response = await Wrike.getTask(taskId);
     if (!response.success) {
-        let comment = `Não foi possível obter os dados da tarefa para rodar a automação de novo andamento de revisão. Erro: ${response.message}`;
+        let comment = `🤖 RJL-Bot: Não foi possível obter os dados da tarefa para rodar a automação de novo andamento de revisão. Erro: ${response.message}`;
         comment = taksCommentQuote.replace("replaceWithComment", comment);
         response = await Wrike.createTaskComment(taskId, comment, true);
         if (!response.success) {
@@ -95,7 +95,7 @@ export async function handler(event) {
         }
     }
     if (errorCount > 0 && errorCount >= foundFolders) {
-        let comment = `Não foi possível adicionar o andamento de revisão. \n${newComments.join('\n')}`;
+        let comment = `🤖 RJL-Bot: Não foi possível adicionar o andamento de revisão. \n${newComments.join('\n')}`;
         comment = taksCommentQuote.replace("replaceWithComment", comment);
         response = await Wrike.createTaskComment(taskId, comment, false);
         if (!response.success) {
@@ -109,7 +109,7 @@ export async function handler(event) {
     }
 
     if (workingFolders.length == 0) {
-        let comment = `Não foi possível adicionar o andamento de revisão. Nenhuma pasta encontrada.`;
+        let comment = `🤖 RJL-Bot: Não foi possível adicionar o andamento de revisão. Nenhuma pasta encontrada.`;
         comment = taksCommentQuote.replace("replaceWithComment", comment);
         response = await Wrike.createTaskComment(taskId, comment, false);
         if (!response.success) {
@@ -169,7 +169,7 @@ export async function handler(event) {
         let response = await LO.newLitigationUpdate(newLitigationUpdatePayload);
         if (response.success) {
             let newUpdateId = response.id;
-            let comment = `Andamento de revisão adicionado às pastas ${workingFolders.map(x => x.title).join(', ')}.\n <a href="https://rj.novajus.com.br/processos/andamentos/details/${newUpdateId}?parentId=${workingFolders[0].novajusId}" >Ver Andamento</a>`;
+            let comment = `🤖 RJL-Bot: Andamento de revisão adicionado às pastas ${workingFolders.map(x => x.title).join(', ')}.\n <a href="https://rj.novajus.com.br/processos/andamentos/details/${newUpdateId}?parentId=${workingFolders[0].novajusId}" >Ver Andamento</a>`;
             comment = taksCommentQuote.replace("replaceWithComment", comment);
             response = await Wrike.createTaskComment(taskId, comment, false);
             if (!response.success) {
@@ -182,7 +182,7 @@ export async function handler(event) {
             };
             return response;
         } else {
-            let comment = `Não foi possível adicionar o andamento de revisão à(s) pasta(s) ${workingFolders.map(x => x.title).join(', ')}. ${response.content}.`;
+            let comment = `🤖 RJL-Bot: Não foi possível adicionar o andamento de revisão à(s) pasta(s) ${workingFolders.map(x => x.title).join(', ')}. ${response.content}.`;
             comment = taksCommentQuote.replace("replaceWithComment", comment);
             if (errorCount > 0) {
                 comment += `\nOcoreram os seguintes erros na inclusão do andamento de revisão. \n${newComments.join('\n')}`;
