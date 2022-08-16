@@ -7,10 +7,15 @@ let params = {
 let wrikeToken;
 
 async function GetToken(forced = false) {
-    if (wrikeToken == null) {
-        let secretString = await getSecret(params)
-        let token = secretString.wrikeKey
-        wrikeToken = token;
+    try {
+        if (wrikeToken == null) {
+            let secretString = await getSecret(params)
+            let token = secretString.wrikeKey
+            wrikeToken = token;
+            console.log(`Wrike token set.`)
+        }
+    } catch (error) {
+        console.log("Erro ao obter a chave do wrike: "+ error)
     }
     return wrikeToken
 }
