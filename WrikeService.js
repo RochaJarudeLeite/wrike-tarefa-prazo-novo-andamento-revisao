@@ -182,6 +182,33 @@ async function getFolder(folderId) {
         return {"success": false, "message": `${message}: ${error}`};
     }
 }
+async function getContact(contactId) {
+    let config = {
+        method: 'get',
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    }
+    let url = `https://www.wrike.com/api/v4/contacts/${contactId}`
+    try {
+        const response = await fetch(url, config).then((response) => {
+            return response
+        })
+        if (response.status === 200) {
+            let body = await response.json();
+            let data = body.data;
+            if (data.length > 0) {
+                return {"success": true, "data": data[0]};
+            }
+        } else {
+            let message = `Erro ao obter os dados do autor do comentário ${contactId}.`;
+            return {"success": false, "message": message};
+        }
+    } catch (error) {
+        let message = `Erro ao obter os dados do autor do comentário ${contactId}.`;
+        return {"success": false, "message": `${message}: ${error}`};
+    }
+}
 
 async function createTaskComment(taskId, comment, isPlainText = false) {
     let config = {
@@ -333,5 +360,6 @@ export {
     createTaskComment,
     updateTaskParentFolder,
     updateFolderDescription,
-    restoreIfDeletedFolder
+    restoreIfDeletedFolder,
+    getContact
 }
