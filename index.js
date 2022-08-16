@@ -24,12 +24,15 @@ export async function handler(event) {
     let taskId = messageJson[0].taskId;
     let taskCommentId = messageJson[0].commentId;
     let taskCommentMatch = reAndamentoRevisãoMarker.exec(messageJson[0].comment.text);
-    let taskCommentAutor = messageJson[0].eventAuthorId;
-    let getContactResult = Wrike.getContact(taskCommentAutor);
+    let taskCommentAutorId = messageJson[0].eventAuthorId;
+    let taskCommentTimestamp = messageJson[0].lastUpdatedDate;
+    let taksCommentQuote = `<blockquote data-user="${taskCommentAutorId}" data-entryid="${taskCommentId}" data-entrytype="comment" data-date="${new Date(taskCommentTimestamp).getTime()}">${messageJson[0].comment.text}</blockquote>replaceWithComment<a rel="${taskCommentAutorId}"></a>`
+    let getContactResult = Wrike.getContact(taskCommentAutorId);
     let TaskCommentContent = taskCommentMatch.groups.content;
     let response = await Wrike.getTask(taskId);
     if (!response.success) {
-        let comment = `${assigneesMention} Não foi possível obter os dados da tarefa para rodar a automação de novo andamento de revisão. Erro: ${response.message}`;
+        let comment = `Não foi possível obter os dados da tarefa para rodar a automação de novo andamento de revisão. Erro: ${response.message}`;
+        comment = taksCommentQuote.replace("replaceWithComment", comment);
         response = await Wrike.createTaskComment(taskId, comment, true);
         if (!response.success) {
             console.log(response.message);
@@ -90,7 +93,8 @@ export async function handler(event) {
         }
     }
     if (errorCount > 0 && errorCount >= foundFolders) {
-        let comment = `${assigneesMention} Não foi possível adicionar o andamento de revisão. \n${newComments.join('\n')}`;
+        let comment = `Não foi possível adicionar o andamento de revisão. \n${newComments.join('\n')}`;
+        comment = taksCommentQuote.replace("replaceWithComment", comment);
         response = await Wrike.createTaskComment(taskId, comment, false);
         if (!response.success) {
             console.log(response.message);
@@ -103,7 +107,8 @@ export async function handler(event) {
     }
 
     if (workingFolders.length == 0) {
-        let comment = `${assigneesMention} Não foi possível adicionar o andamento de revisão. Nenhuma pasta encontrada.`;
+        let comment = `Não foi possível adicionar o andamento de revisão. Nenhuma pasta encontrada.`;
+        comment = taksCommentQuote.replace("replaceWithComment", comment);
         response = await Wrike.createTaskComment(taskId, comment, false);
         if (!response.success) {
             console.log(response.message);
@@ -162,6 +167,7 @@ export async function handler(event) {
         if (response.success) {
             let newUpdateId = response.id;
             let comment = `Andamento de revisão adicionado às pastas ${workingFolders.map(x => x.title).join(', ')}.\n <a href="https://rj.novajus.com.br/processos/andamentos/details/${newUpdateId}?parentId=${workingFolders[0].novajusId}" >Ver Andamento</a>`;
+            comment = taksCommentQuote.replace("replaceWithComment", comment);
             response = await Wrike.createTaskComment(taskId, comment, false);
             if (!response.success) {
                 console.log(response.message);
@@ -172,7 +178,8 @@ export async function handler(event) {
             };
             return response;
         } else {
-            let comment = `${assigneesMention} Não foi possível adicionar o andamento de revisão às pastas ${workingFolders.map(x => x.title).join(', ')}. ${response.content}.`;
+            let comment = `Não foi possível adicionar o andamento de revisão às pastas ${workingFolders.map(x => x.title).join(', ')}. ${response.content}.`;
+            comment = taksCommentQuote.replace("replaceWithComment", comment);
             if (errorCount > 0) {
                 comment += `\nOcoreram os seguintes erros na inclusão do andamento de revisão. \n${newComments.join('\n')}`;
             }
