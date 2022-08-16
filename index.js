@@ -59,9 +59,9 @@ export async function handler(event) {
             )
         }
         await Promise.resolve(results());
-        if (wrikeTaskParentIds.length == 0 ) {
-            wrikeTaskParentIds = wrikeTask.parentIds;
-        }
+    }
+    if (wrikeTaskParentIds.length == 0 ) {
+        wrikeTaskParentIds = wrikeTask.parentIds;
     }
     for (let i = 0; i < wrikeTaskParentIds.length; i++) {
         let response = await Wrike.getFolder(wrikeTaskParentIds[i]);
