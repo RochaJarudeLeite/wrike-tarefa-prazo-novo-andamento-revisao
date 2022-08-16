@@ -236,6 +236,32 @@ async function createTaskComment(taskId, comment, isPlainText = false) {
     }
 }
 
+async function deleteTaskComment(commentId) {
+    let config = {
+        method: 'delete',
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    }
+    let url = `https://www.wrike.com/api/v4/comments/${commentId}`
+    try {
+        const response = await fetch(url, config).then((response) => {
+            return response
+        })
+        if (response.status === 200) {
+            let body = await response.json();
+            let data = body.data;
+            if (data.length > 0) {
+                return {"success": true};
+            }
+        } else {
+            return {"success": false, "message": "Erro criar deletar comentário."};
+        }
+    } catch (error) {
+        return {"success": false, "message": "Erro ao deletar comentário: " + error};
+    }
+}
+
 async function searchFolder(folderTitle) {
     folderTitle = folderTitle.replaceAll('/', '_');
     let config = {
@@ -361,5 +387,6 @@ export {
     updateTaskParentFolder,
     updateFolderDescription,
     restoreIfDeletedFolder,
-    getContact
+    getContact,
+    deleteTaskComment
 }

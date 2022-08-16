@@ -9,7 +9,7 @@
         "MessageId": "95df01b4-ee98-5cb9-9903-4c221d41eb5e",
         "TopicArn": "arn:{partition}:sns:EXAMPLE",
         "Subject": "TestInvoke",
-        "Message": "[{\"commentId\": \"IEABJD3YIMUCOI2V\",\"comment\": {\"text\":\"Andamento de Revisão: Teste de Andamento de Revisão\",\"html\":\"Test\"},\"text\": \"Novo andamento\",\"html\": \"Novo andamento\",\"taskId\": \"IEABJD3YKQGP5YXQ\",\"webhookId\": \"IEABJD3YJAABGH6E\",\"eventAuthorId\": \"KUACQE4M\",\"eventType\": \"CommentAdded\",\"lastUpdatedDate\": \"2022-08-16T15:21:12Z\"}]",
+        "Message": "[{\"commentId\":\"IEABJD3YIMUCQJZH\",\"comment\":{\"text\":\"AR: Proc-0001720 Teste de Andamento de Revisão\",\"html\":\"AR: Proc-0001720 Teste de Andamento de Revisão\"},\"taskId\":\"IEABJD3YKQGP5YXQ\",\"webhookId\":\"IEABJD3YJAABGIAX\",\"eventAuthorId\":\"KUACQE4M\",\"eventType\":\"CommentAdded\",\"lastUpdatedDate\":\"2022-08-16T18:57:54Z\"}]",
         "Timestamp": "1970-01-01T00:00:00Z",
         "SignatureVersion": "1",
         "Signature": "EXAMPLE",
