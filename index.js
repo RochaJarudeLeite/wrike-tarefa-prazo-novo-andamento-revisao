@@ -154,7 +154,6 @@ export async function handler(event) {
             return response;
         }
     }
-
     response = {
         statusCode: 200,
         body: JSON.stringify('Done'),
