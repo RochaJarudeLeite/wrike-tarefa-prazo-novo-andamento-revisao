@@ -12,7 +12,7 @@ export async function handler(event) {
     let message = sns.Message;
     let messageJson = JSON.parse(message);
     console.log(messageJson);
-    if (messageJson[0].eventType !== 'CommentAdded' && reAndamentoRevisãoMarker.test(messageJson[0].comment.text) && !messageJson[0].comment.html.includes('blockquote')) {
+    if (messageJson[0].eventType !== 'CommentAdded' || !reAndamentoRevisãoMarker.test(messageJson[0].comment.text) || messageJson[0].comment.html.includes('blockquote')) {
         console.log("Skipped");
         let response = {
             statusCode: 200,
