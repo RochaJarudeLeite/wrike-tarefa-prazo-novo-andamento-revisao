@@ -78,9 +78,9 @@ export async function handler(event) {
             let folderData = response.data;
             let folderNovajusId;
             if (folderData.customFields.length > 0) {
-                folderNovajusId = folderData.customFields.find(x => x.id === 'IEABJD3YJUADBUZU').value;
+                folderNovajusId = parseInt(folderData.customFields.find(x => x.id === 'IEABJD3YJUADBUZU').value);
             } else {
-                folderNovajusId = null;
+                folderNovajusId = NaN;
             }
             let folderTitle = folderData.title.replace(/[\s_]/g, '-');
             let isMatch = reProcFolder.exec(folderTitle);
@@ -88,7 +88,7 @@ export async function handler(event) {
                 let newWorkingFolder = {
                     id: folderData.id,
                     title: folderData.title.replace(/[\s_]/g, '/'),
-                    novajusId: folderNovajusId !== null ? parseInt(folderNovajusId) : null
+                    novajusId:  isNaN(folderNovajusId) ? null : parseInt(folderNovajusId)
                 }
                 workingFolders.push(newWorkingFolder);
             } else {
@@ -172,7 +172,7 @@ export async function handler(event) {
         response = await LO.newLitigationUpdate(newLitigationUpdatePayload);
         if (response.success) {
             let newUpdateId = response.id;
-            let comment = `🤖 RJL-Bot: Andamento de revisão adicionado às pastas ${workingFolders.map(x => x.title).join(', ')}.\n <a href="https://rj.novajus.com.br/processos/andamentos/details/${newUpdateId}?parentId=${workingFolders[0].novajusId}" >Ver Andamento</a>`;
+            let comment = `🤖 RJL-Bot: Andamento de revisão adicionado à(s) pasta(s) ${workingFolders.map(x => x.title).join(', ')}.\n <a href="https://rj.novajus.com.br/processos/andamentos/details/${newUpdateId}?parentId=${workingFolders[0].novajusId}" >Ver Andamento</a>`;
             comment = taksCommentQuote.replace("replaceWithComment", comment);
             response = await Wrike.createTaskComment(taskId, comment, false);
             if (!response.success) {
