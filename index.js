@@ -172,7 +172,7 @@ export async function handler(event) {
         response = await LO.newLitigationUpdate(newLitigationUpdatePayload);
         if (response.success) {
             let newUpdateId = response.id;
-            let comment = `🤖 RJL-Bot: Andamento de revisão adicionado à(s) pasta(s) ${workingFolders.map(x => x.title).join(', ')}.\n <a href="https://rj.novajus.com.br/processos/andamentos/details/${newUpdateId}?parentId=${workingFolders[0].novajusId}" >Ver Andamento</a>`;
+            let comment = `🤖 RJL-Bot: Andamento de revisão adicionado à(s) pasta(s): ${workingFolders.map(x => x.title).join(', ')}.\n <a href="https://rj.novajus.com.br/processos/andamentos/details/${newUpdateId}?parentId=${workingFolders[0].novajusId}" >Ver Andamento</a>`;
             comment = taksCommentQuote.replace("replaceWithComment", comment);
             response = await Wrike.createTaskComment(taskId, comment, false);
             if (!response.success) {
