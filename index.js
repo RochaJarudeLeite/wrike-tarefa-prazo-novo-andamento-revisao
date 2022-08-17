@@ -178,7 +178,7 @@ export async function handler(event) {
             if (!response.success) {
                 console.log(response.message);
             }
-            await Wrike.deleteTaskComment(taskCommentId);
+            // await Wrike.deleteTaskComment(taskCommentId);
             response = {
                 statusCode: 200,
                 body: JSON.stringify('Success'),
