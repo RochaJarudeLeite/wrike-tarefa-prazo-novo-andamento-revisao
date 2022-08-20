@@ -1,4 +1,3 @@
-import {GetWrikeToken} from './WrikeAuth.js'
 import {wrikeToken} from './WrikeAuth.js'
 import fetch from 'node-fetch'
 
