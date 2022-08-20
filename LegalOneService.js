@@ -1,21 +1,17 @@
-import {getLegalOneToken} from './LegalOneAuth.js'
 import fetch from 'node-fetch'
-import fs from 'fs'
-import * as v from 'validate-cnj'
-import {updateTaskParentFolder} from "./WrikeService.js";
+import {legalOneToken} from './LegalOneAuth.js'
+
 
 
 async function getLitigationsByCNJOrFolder(
     value,
     filter = 'folder',
-    retry = 0,
-    forceToken = false
+    retry = 0
 ) {
-    let token = await getLegalOneToken(forceToken)
     let config = {
         method: 'get',
         headers: {
-            Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + legalOneToken
         }
     }
     let odataFilter = `${filter} eq \'${value}\'`
@@ -26,8 +22,7 @@ async function getLitigationsByCNJOrFolder(
                 if (retry < 3) {
                     return getLitigationsByCNJOrFolder(
                         value,
-                        (retry = retry + 1),
-                        (forceToken = true)
+                        (retry = retry + 1)
                     )
                 }
             }
@@ -48,8 +43,7 @@ async function getLitigationsByCNJOrFolder(
             if (retry < 3) {
                 return getLitigationsByCNJOrFolder(
                     value,
-                    (retry = retry + 1),
-                    (forceToken = true)
+                    (retry = retry + 1)
                 )
             }
         } else {
@@ -69,12 +63,11 @@ async function getLitigationsByCNJOrFolder(
 async function newLitigationUpdate(payload, retry = 3) {
     if (payload != null) {
         try {
-            let token = await getLegalOneToken();
             let config = {
                 method: 'post',
                 body: JSON.stringify(payload),
                 headers: {
-                    Authorization: 'Bearer ' + token,
+                    Authorization: 'Bearer ' + legalOneToken,
                     'Content-Type': 'application/json'
                 }
             }

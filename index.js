@@ -1,5 +1,6 @@
+import {GetLegalOneToken} from './LegalOneAuth.js'
+import {GetWrikeToken} from './WrikeAuth.js'
 import * as LO from './LegalOneService.js';
-import {GetLegalOneTokenExpirationDate} from './LegalOneAuth.js'
 import * as Wrike from './WrikeService.js';
 import * as v from 'validate-cnj'
 
@@ -22,8 +23,15 @@ export async function handler(event) {
         };
         return response;
     }
-    let LOTokenMethod = GetLegalOneTokenExpirationDate();
-    let assigneesMention = '<a class="stream-user-id avatar quasi-contact" rel="@assignees">@assignees</a>';
+    let wrikeToken = await GetWrikeToken();
+    if (wrikeToken == null) {
+        console.log("No Wrike Token found");
+        let response = {
+            statusCode: 200,
+            body: JSON.stringify('No Wrike Token found'),
+        };
+        return response;
+    }
     let taskId = messageJson[0].taskId;
     let taskCommentId = messageJson[0].commentId;
     let taskCommentMatch = reAndamentoRevisãoMarker.exec(messageJson[0].comment.text);
@@ -36,13 +44,18 @@ export async function handler(event) {
     console.log("Getting Wrike Task.")
     response = await Wrike.getTask(taskId);
     if (!response.success) {
-        let comment = `🤖 RJL-Bot: Não foi possível obter os dados da tarefa para rodar a automação de novo andamento de revisão. Erro: ${response.message}`;
-        comment = taksCommentQuote.replace("replaceWithComment", comment);
+        let comment = `🤖 RJL-Bot: Não foi possível obter os dados da tarefa para rodar a automação. Erro: ${response.message}`;
         response = await Wrike.createTaskComment(taskId, comment, true);
         if (!response.success) {
             console.log(response.message);
         }
+        let response = {
+            statusCode: 200,
+            body: JSON.stringify('No Wrike Token found'),
+        };
+        return response;
     }
+    let legalOneTokePromise = GetLegalOneToken();
     let wrikeTask = response.wrikeTask;
     let wrikeTaskParentIds = [];
     let newComments = [];
@@ -78,7 +91,7 @@ export async function handler(event) {
             let folderData = response.data;
             let folderNovajusId;
             if (folderData.customFields.length > 0) {
-                folderNovajusId = parseInt(folderData.customFields.find(x => x.id === 'IEABJD3YJUADBUZU').value);
+                folderNovajusId = parseInt(folderData.customFields.find(x => x.id === Wrike.novajusIdCustomField).value);
             } else {
                 folderNovajusId = NaN;
             }
@@ -125,7 +138,19 @@ export async function handler(event) {
         };
         return response;
     }
-    await Promise.resolve(LOTokenMethod);
+    let legalOneToken = await legalOneTokePromise;
+    if (legalOneToken == null) {
+        let comment = `🤖 RJL-Bot: Automação falou ao obter o token do Novajus. Erro: ${response.message}`;
+        response = await Wrike.createTaskComment(taskId, comment, true);
+        if (!response.success) {
+            console.log(response.message);
+        }
+        let response = {
+            statusCode: 200,
+            body: JSON.stringify('No Legal One Token found'),
+        };
+        return response;
+    }
     // for each workingFolder with novajusId = null, get the novajusId from LegalOne
     for (let i = 0; i < workingFolders.length; i++) {
         if (workingFolders[i].novajusId === null) {

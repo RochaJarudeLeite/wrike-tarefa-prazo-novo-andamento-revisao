@@ -1,15 +1,16 @@
 import {GetWrikeToken} from './WrikeAuth.js'
+import {wrikeToken} from './WrikeAuth.js'
 import fetch from 'node-fetch'
 
-const token = await GetWrikeToken()
 let tempLitigationFolderId = "IEABJD3YI44HKA7O";
 let novajusIdCustomField = "IEABJD3YJUADBUZU";
+
 
 async function getTask(taskId) {
     let config = {
         method: 'get',
         headers: {
-            Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + wrikeToken
         }
     }
     let url = `https://www.wrike.com/api/v4/tasks/${taskId}`
@@ -33,133 +34,11 @@ async function getTask(taskId) {
     }
 }
 
-async function addTaksParents(citedLitigation, parentId) {
-    let taskId = citedLitigation.taskId;
-    let config = {
-        method: 'put',
-        headers: {
-            Authorization: 'Bearer ' + token
-        }
-    }
-    let url = `https://www.wrike.com/api/v4/tasks/${taskId}?addParents=["${parentId}"]`
-    try {
-        const response = await fetch(url, config).then((response) => {
-            return response
-        })
-        if (response.status === 200) {
-            let body = await response.json();
-            let data = body.data;
-            if (data.length > 0) {
-                return {"success": true};
-            } else {
-                citedLitigation.errors.push("Erro ao adicionar tarefa pai.");
-                return {"success": false, "message": "Erro ao adicionar etiqueta na pasta."};
-            }
-        } else {
-            citedLitigation.errors.push("Erro ao adicionar tarefa pai.");
-            return {"success": false, "message": "Erro ao adicionar etiqueta na pasta."};
-        }
-    } catch (error) {
-        return {"success": false, "message": "Erro: " + error};
-    }
-}
-
-async function updateTaskDescription(taskId, newDescription) {
-    let config = {
-        method: 'put',
-        headers: {
-            Authorization: 'Bearer ' + token
-        }
-    }
-    let url = `https://www.wrike.com/api/v4/tasks/${taskId}?description=${newDescription}`
-    try {
-        const response = await fetch(url, config).then((response) => {
-            return response
-        })
-        if (response.status === 200) {
-            let body = await response.json();
-            let data = body.data;
-            if (data.length > 0) {
-                return {"success": true};
-            }
-        } else {
-            return {"success": false, "message": "Erro ao atualizar a descrição da tarefa."};
-        }
-    } catch (error) {
-        return {"success": false, "message": "Erro ao atualizar a descrição da tarefa: " + error};
-    }
-}
-
-async function updateFolderDescription(citedLitigation, newDescription) {
-    let folderId = citedLitigation.folderId;
-    let config = {
-        method: 'put',
-        headers: {
-            Authorization: 'Bearer ' + token
-        }
-    }
-    let url = `https://www.wrike.com/api/v4/folders/${folderId}?description=${newDescription}`
-    try {
-        const response = await fetch(url, config).then((response) => {
-            return response
-        })
-        if (response.status === 200) {
-            let body = await response.json();
-            let data = body.data;
-            if (data.length > 0) {
-                if (data[0].scope === "RbFolder") {
-                    await restoreIfDeletedFolder(citedLitigation);
-                }
-                return {"success": true};
-            }
-        } else {
-            let message = `Erro ao atualizar a descrição da pasta ${folderId}.`;
-            citedLitigation.errors.push(`<li>${message}</li>`);
-            return {"success": false, "message": message};
-        }
-    } catch (error) {
-        let message = `Erro ao atualizar a descrição da pasta ${folderId}`;
-        citedLitigation.errors.push(`<li>${message}</li>`);
-        return {"success": false, "message": `${message}: ${error}`};
-    }
-}
-
-async function restoreIfDeletedFolder(citedLitigation) {
-    let folderId = citedLitigation.folderId;
-    let config = {
-        method: 'put',
-        headers: {
-            Authorization: 'Bearer ' + token
-        }
-    }
-    let url = `https://www.wrike.com/api/v4/folders/${folderId}?restore=true`
-    try {
-        const response = await fetch(url, config).then((response) => {
-            return response
-        })
-        if (response.status === 200) {
-            let body = await response.json();
-            let data = body.data;
-            if (data.length > 0) {
-                return {"success": true};
-            }
-        } else {
-            let message = `Erro ao restaurar a pasta ${folderId}.`;
-            citedLitigation.errors.push(`<li>${message}</li>`);
-            return {"success": false, "message": message};
-        }
-    } catch (error) {
-        let message = `Erro ao restaurar a pasta ${folderId}`;
-        citedLitigation.errors.push(`<li>${message}</li>`);
-        return {"success": false, "message": `${message}: ${error}`};
-    }
-}
-
 async function getFolder(folderId) {
     let config = {
         method: 'get',
         headers: {
-            Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + wrikeToken
         }
     }
     let url = `https://www.wrike.com/api/v4/folders/${folderId}`
@@ -182,11 +61,12 @@ async function getFolder(folderId) {
         return {"success": false, "message": `${message}: ${error}`};
     }
 }
+
 async function getContact(contactId) {
     let config = {
         method: 'get',
         headers: {
-            Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + wrikeToken
         }
     }
     let url = `https://www.wrike.com/api/v4/contacts/${contactId}`
@@ -214,7 +94,7 @@ async function createTaskComment(taskId, comment, isPlainText = false) {
     let config = {
         method: 'post',
         headers: {
-            Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + wrikeToken
         }
     }
     let url = `https://www.wrike.com/api/v4/tasks/${taskId}/comments?text=${comment}&plainText=${isPlainText}`
@@ -240,7 +120,7 @@ async function deleteTaskComment(commentId) {
     let config = {
         method: 'delete',
         headers: {
-            Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + wrikeToken
         }
     }
     let url = `https://www.wrike.com/api/v4/comments/${commentId}`
@@ -267,7 +147,7 @@ async function searchFolder(folderTitle) {
     let config = {
         method: 'post',
         headers: {
-            Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + wrikeToken
         }
     }
     let url = `https://www.wrike.com/api/v4/ediscovery_search?scopes=["folder","project"]&terms=["${folderTitle}"]`
@@ -291,15 +171,15 @@ async function searchFolder(folderTitle) {
     }
 }
 
-async function createFolder(folderTitle,novajusId) {
+async function createFolder(folderTitle, novajusId) {
     folderTitle = folderTitle.replaceAll('/', '_');
     let config = {
         method: 'post',
         headers: {
-            Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + wrikeToken
         }
     }
-    let novajusIdCustomField = {"id":"IEABJD3YJUADBUZU","value":`${novajusId}`};
+    let novajusIdCustomField = {"id":novajusIdCustomField,"value":`${novajusId}`};
     let url = `https://www.wrike.com/api/v4/folders/${tempLitigationFolderId}/folders?title=${folderTitle}&customFields=[${novajusIdCustomField}]`
     try {
         const response = await fetch(url, config).then((response) => {
@@ -319,74 +199,13 @@ async function createFolder(folderTitle,novajusId) {
     }
 }
 
-async function updateFolderNovajusIdCustomField(folderId,novajusId) {
-    let config = {
-        method: 'put',
-        headers: {
-            Authorization: 'Bearer ' + token
-        }
-    }
-    let novajusIdCustomField = {"id":"IEABJD3YJUADBUZU","value":`${novajusId}`};
-    let url = `https://www.wrike.com/api/v4/folders/${folderId}?customFields=[${novajusIdCustomField}]`
-    try {
-        const response = await fetch(url, config).then((response) => {
-            return response
-        })
-        if (response.status === 200) {
-            let body = await response.json();
-            let data = body.data;
-            if (data.length > 0) {
-                return {"success": true, "id": data[0].id};
-            }
-        } else {
-            return {"success": false, "message": "Erro ao atualizar ."};
-        }
-    } catch (error) {
-        return {"success": false, "message": "Erro: " + error};
-    }
-}
-
-async function updateTaskParentFolder(citedLitigation, folderTitle) {
-    try {
-        let folderId = "";
-        let response = await searchFolder(folderTitle);
-        if (response.success && response.id == null) {
-            response = await createFolder(folderTitle,citedLitigation.novajudId);
-            if (response.success) {
-                folderId = response.id;
-                citedLitigation.folderId = folderId;
-                response = await addTaksParents(citedLitigation, folderId);
-                if (!response.success) {
-                    citedLitigation.errors.push(`<li>Não foi possível Incluir/Criar a pasta relacionada: ${response.message}</li>`)
-                }
-            }
-        } else if (response.success && response.id != null) {
-            folderId = response.id;
-            citedLitigation.folderId = folderId;
-            response = await addTaksParents(citedLitigation, folderId);
-            if (!response.success) {
-                citedLitigation.errors.push(`<li>Não foi possível Incluir/Criar a pasta relacionada: ${response.message}</li>`)
-            }
-            response = await updateFolderNovajusIdCustomField(folderId, citedLitigation.novajudId);
-            if (!response.success) {
-                citedLitigation.errors.push(`<li>Não foi possível adicionar o id do novajus na pasta indicada: ${response.message}</li>`)
-            }
-        }
-    } catch (error) {
-        citedLitigation.errors.push(`<li>Não foi possível incluir Incluir/Criar a pasta relacionada: ${error}</li>`)
-    }
-}
-
 export {
     getTask,
     searchFolder,
     getFolder,
     createFolder,
-    updateTaskDescription,
     createTaskComment,
-    updateTaskParentFolder,
-    updateFolderDescription,
-    restoreIfDeletedFolder,
     getContact,
-    deleteTaskComment
+    deleteTaskComment,
+    novajusIdCustomField
 }

@@ -4,20 +4,20 @@ let params = {
     SecretId: 'prod/wrike'
 }
 
-let wrikeToken;
+let wrikeToken = null;
 
 async function GetToken(forced = false) {
-    try {
-        if (wrikeToken == null) {
-            let secretString = await getSecret(params)
-            let token = secretString.wrikeKey
+    if (wrikeToken == null) {
+        let secretString = await getSecret(params)
+        let token = secretString.wrikeKey
+        if (token != null) {
             wrikeToken = token;
-            console.log(`Wrike token set.`)
         }
-    } catch (error) {
-        console.log("Erro ao obter a chave do wrike: "+ error)
     }
     return wrikeToken
 }
 
-export {GetToken as GetWrikeToken}
+export {
+    GetToken as GetWrikeToken,
+    wrikeToken
+}
