@@ -11,11 +11,12 @@ const reAndamentoRevisãoMarker = /(\s?AR\s?\:|\s?Andamento de Revisão\s?\:|\s?
 
 export async function handler(event) {
     let response;
+    let validEventType = 'CommentAdded';
     let sns = event.Records[0].Sns;
     let message = sns.Message;
     let messageJson = JSON.parse(message);
     console.log(messageJson);
-    if (messageJson[0].eventType !== 'CommentAdded' || !reAndamentoRevisãoMarker.test(messageJson[0].comment.text) || messageJson[0].comment.html.includes('blockquote')) {
+    if (messageJson[0].eventType != validEventType || !reAndamentoRevisãoMarker.test(messageJson[0].comment.text) || messageJson[0].comment.html.includes('blockquote')) {
         console.log("Skipped");
         response = {
             statusCode: 200,
