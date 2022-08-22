@@ -1,8 +1,6 @@
 import fetch from 'node-fetch'
 import {legalOneToken} from './LegalOneAuth.js'
 
-
-
 async function getLitigationsByCNJOrFolder(
     value,
     filter = 'folder',
@@ -58,8 +56,6 @@ async function getLitigationsByCNJOrFolder(
     }
 }
 
-
-//Create new Litigation Update
 async function newLitigationUpdate(payload, retry = 3) {
     if (payload != null) {
         try {
@@ -91,7 +87,6 @@ async function newLitigationUpdate(payload, retry = 3) {
         return {success: false, content: 'Payload não indicado.'}
     }
 }
-
 
 export {
     getLitigationsByCNJOrFolder,

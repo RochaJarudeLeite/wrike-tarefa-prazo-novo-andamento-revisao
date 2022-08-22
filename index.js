@@ -6,7 +6,7 @@ import * as Wrike from './WrikeService.js';
 const reProcFolder = /(?<folder>Proc-\d{7}\/\d+|Proc-\d{7})/
 const reProcFolderWrongNotation = /(Proc-\d{7})_(\d+)/g
 const reProcFolderGlobal = /(?<folder>Proc-\d{7}\/\d+|Proc-\d{7})/g
-const reAndamentoRevisãoMarker = /(\s?AR\s?\:|\s?Andamento de Revisão\s?\:|\s?Revisão\s?\:)(?<content>.*)/
+const reAndamentoRevisaoMarker = /(\s?AR\s?:|\s?Andamento de Revisão\s?:|\s?Revisão\s?:)(?<content>.*)/
 
 export async function handler(event) {
     let response;
@@ -15,7 +15,7 @@ export async function handler(event) {
     let message = sns.Message;
     let messageJson = JSON.parse(message);
     console.log(messageJson);
-    if (messageJson[0].eventType != validEventType || !reAndamentoRevisãoMarker.test(messageJson[0].comment.text) || messageJson[0].comment.html.includes('blockquote')) {
+    if (messageJson[0].eventType !== validEventType || !reAndamentoRevisaoMarker.test(messageJson[0].comment.text) || messageJson[0].comment.html.includes('blockquote')) {
         console.log("Skipped");
         response = {
             statusCode: 200,
@@ -26,15 +26,14 @@ export async function handler(event) {
     let wrikeToken = await GetWrikeToken();
     if (wrikeToken == null) {
         console.log("No Wrike Token found");
-        let response = {
+        return {
             statusCode: 200,
             body: JSON.stringify('No Wrike Token found'),
         };
-        return response;
     }
     let taskId = messageJson[0].taskId;
     let taskCommentId = messageJson[0].commentId;
-    let taskCommentMatch = reAndamentoRevisãoMarker.exec(messageJson[0].comment.text);
+    let taskCommentMatch = reAndamentoRevisaoMarker.exec(messageJson[0].comment.text);
     let taskCommentAutorId = messageJson[0].eventAuthorId;
     let taskCommentTimestamp = messageJson[0].lastUpdatedDate;
     let taksCommentQuote = `<blockquote data-user="${taskCommentAutorId}" data-entryid="${taskCommentId}" data-entrytype="comment" data-date="${new Date(taskCommentTimestamp).getTime()}">${messageJson[0].comment.text}</blockquote>replaceWithComment<a rel="${taskCommentAutorId}"></a>`
@@ -49,11 +48,10 @@ export async function handler(event) {
         if (!response.success) {
             console.log(response.message);
         }
-        let response = {
+        return {
             statusCode: 200,
             body: JSON.stringify('No Wrike Token found'),
         };
-        return response;
     }
     let legalOneTokePromise = GetLegalOneToken();
     let wrikeTask = response.wrikeTask;
@@ -81,7 +79,7 @@ export async function handler(event) {
         }
         await Promise.resolve(results());
     }
-    if (wrikeTaskParentIds.length == 0 ) {
+    if (wrikeTaskParentIds.length === 0) {
         wrikeTaskParentIds = wrikeTask.parentIds;
     }
     for (let i = 0; i < wrikeTaskParentIds.length; i++) {
@@ -124,7 +122,7 @@ export async function handler(event) {
         return response;
     }
 
-    if (workingFolders.length == 0) {
+    if (workingFolders.length === 0) {
         let comment = `🤖 RJL-Bot: Não foi possível adicionar o andamento de revisão. Nenhuma pasta encontrada.`;
         comment = taksCommentQuote.replace("replaceWithComment", comment);
         response = await Wrike.createTaskComment(taskId, comment, false);
@@ -145,7 +143,7 @@ export async function handler(event) {
         if (!response.success) {
             console.log(response.message);
         }
-        let response = {
+        response = {
             statusCode: 200,
             body: JSON.stringify('No Legal One Token found'),
         };
@@ -156,16 +154,13 @@ export async function handler(event) {
         if (workingFolders[i].novajusId === null) {
             response = await LO.getLitigationsByCNJOrFolder(workingFolders[i].title);
             if (response.success) {
-                let foundId = response.id;
-                workingFolders[i].novajusId = foundId;
+                workingFolders[i].novajusId = response.id;
             } else {
                 newComments.push(`Não foi possível adicionar o andamento de revisão à pasta ${workingFolders[i].title}. ${response.content}.`);
             }
         }
     }
 
-    // build newLitigationUpdate payload
-    // remove workingFolders titles from TaskCommentContent
     for (let i = 0; i < workingFolders.length; i++) {
         TaskCommentContent = TaskCommentContent.replace(workingFolders[i].title, '').trim().replace(/^,+/g, ' ');
     }
@@ -203,7 +198,6 @@ export async function handler(event) {
             if (!response.success) {
                 console.log(response.message);
             }
-            // await Wrike.deleteTaskComment(taskCommentId);
             response = {
                 statusCode: 200,
                 body: JSON.stringify('Success'),

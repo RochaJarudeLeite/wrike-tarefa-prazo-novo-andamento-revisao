@@ -1,7 +1,6 @@
-import {GetSecretValueCommand, SecretsManagerClient, UpdateSecretCommand} from '@aws-sdk/client-secrets-manager'
+import {GetSecretValueCommand, SecretsManagerClient} from '@aws-sdk/client-secrets-manager'
 
 const REGION = 'sa-east-1'
-const secretsClient = new SecretsManagerClient({region: REGION})
 
 const client = new SecretsManagerClient({
     region: REGION,
@@ -21,12 +20,4 @@ async function getSecret(params) {
     }
 }
 
-async function setSecret(params) {
-    try {
-        const data = await client.send(new UpdateSecretCommand(params));
-    } catch (error) {
-        return error
-    }
-}
-
-export {getSecret, setSecret}
+export {getSecret}
