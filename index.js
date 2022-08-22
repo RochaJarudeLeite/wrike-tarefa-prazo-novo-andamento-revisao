@@ -92,7 +92,7 @@ export async function handler(event) {
             let folderData = response.data;
             let folderNovajusId;
             if (folderData.customFields.length > 0) {
-                folderNovajusId = parseInt(folderData.customFields.find(x => x.id === Wrike.novajusIdCustomField).value);
+                folderNovajusId = parseInt(folderData.customFields.find(x => x.id === Wrike.novajusIdCustomFieldId).value);
             } else {
                 folderNovajusId = NaN;
             }

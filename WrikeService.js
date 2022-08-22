@@ -1,8 +1,8 @@
 import {wrikeToken} from './WrikeAuth.js'
 import fetch from 'node-fetch'
 
-let tempLitigationFolderId = "IEABJD3YI44HKA7O";
-let novajusIdCustomField = "IEABJD3YJUADBUZU";
+const tempLitigationFolderId = "IEABJD3YI44HKA7O";
+const novajusIdCustomFieldId = "IEABJD3YJUADBUZU";
 
 
 async function getTask(taskId) {
@@ -170,41 +170,12 @@ async function searchFolder(folderTitle) {
     }
 }
 
-async function createFolder(folderTitle, novajusId) {
-    folderTitle = folderTitle.replaceAll('/', '_');
-    let config = {
-        method: 'post',
-        headers: {
-            Authorization: 'Bearer ' + wrikeToken
-        }
-    }
-    let novajusIdCustomField = {"id":novajusIdCustomField,"value":`${novajusId}`};
-    let url = `https://www.wrike.com/api/v4/folders/${tempLitigationFolderId}/folders?title=${folderTitle}&customFields=[${novajusIdCustomField}]`
-    try {
-        const response = await fetch(url, config).then((response) => {
-            return response
-        })
-        if (response.status === 200) {
-            let body = await response.json();
-            let data = body.data;
-            if (data.length > 0) {
-                return {"success": true, "id": data[0].id};
-            }
-        } else {
-            return {"success": false, "message": "Erro ao criar pasta."};
-        }
-    } catch (error) {
-        return {"success": false, "message": "Erro ao criar pasta: " + error};
-    }
-}
-
 export {
     getTask,
     searchFolder,
     getFolder,
-    createFolder,
     createTaskComment,
     getContact,
     deleteTaskComment,
-    novajusIdCustomField
+    novajusIdCustomFieldId
 }
