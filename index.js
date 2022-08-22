@@ -2,7 +2,6 @@ import {GetLegalOneToken} from './LegalOneAuth.js'
 import {GetWrikeToken} from './WrikeAuth.js'
 import * as LO from './LegalOneService.js';
 import * as Wrike from './WrikeService.js';
-import * as v from 'validate-cnj'
 
 const reProcFolder = /(?<folder>Proc-\d{7}\/\d+|Proc-\d{7})/
 const reProcFolderWrongNotation = /(Proc-\d{7})_(\d+)/g
