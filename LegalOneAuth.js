@@ -13,8 +13,8 @@ async function GetLegalOneSecret() {
         console.log("No LegalOne Key found in Secrets Manager")
         return null
     } else {
-        return secretResponse.THOMSON_REUTERS_AUTH;
         console.log("LegalOne secret retrieved");
+        return secretResponse.THOMSON_REUTERS_AUTH;
     }
 }
 
