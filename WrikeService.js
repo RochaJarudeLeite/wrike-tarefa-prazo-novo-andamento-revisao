@@ -92,7 +92,7 @@ async function getContact(contactId) {
 async function createTaskComment(taskId, comment, isPlainText = false) {
     // form data payload
     let formData = new FormData();
-    formData.append('text', comment);
+    formData.append('text', JSON.stringify(comment));
     formData.append('isPlainText', isPlainText);
     let config = {
         method: 'post',
