@@ -1,5 +1,6 @@
 import {wrikeToken} from './WrikeAuth.js'
 import fetch from 'node-fetch'
+import axios from "axios";
 
 const novajusIdCustomFieldId = "IEABJD3YJUADBUZU";
 
@@ -88,20 +89,26 @@ async function getContact(contactId) {
 }
 
 async function createTaskComment(taskId, comment, isPlainText = false) {
+    // form data payload
+    let formData = new FormData();
+    formData.append('text', comment);
+    formData.append('isPlainText', isPlainText);
     let config = {
         method: 'post',
         headers: {
-            Authorization: 'Bearer ' + wrikeToken
-        }
+            Authorization: 'Bearer ' + wrikeToken,
+            ...formData.getHeaders()
+        },
+        data: formData
     }
-    let url = `https://www.wrike.com/api/v4/tasks/${taskId}/comments?text=${comment}&plainText=${isPlainText}`
+    let url = `https://www.wrike.com/api/v4/tasks/${taskId}`
     try {
-        const response = await fetch(url, config).then((response) => {
+        const response = await axios(url, config).then((response) => {
             return response
         })
         if (response.status === 200) {
-            let body = await response.json();
-            let data = body.data;
+            let body = response.data;
+            let { data } = body;
             if (data.length > 0) {
                 return {"success": true};
             }
