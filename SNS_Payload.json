@@ -9,7 +9,7 @@
         "MessageId": "95df01b4-ee98-5cb9-9903-4c221d41eb5e",
         "TopicArn": "arn:{partition}:sns:EXAMPLE",
         "Subject": "TestInvoke",
-        "Message": "[{\"commentId\":\"IEABJD3YIMUCSAXS\",\"comment\":{\"text\":\"AR: Teste\",\"html\":\"AR: Teste\"},\"taskId\":\"IEABJD3YKQGP5YXQ\",\"webhookId\":\"IEABJD3YJAABGIAX\",\"eventAuthorId\":\"KUACQE4M\",\"eventType\":\"CommentAdded\",\"lastUpdatedDate\":\"2022-08-16T21:58:18Z\"}]",
+        "Message": "replaceWithMessage",
         "Timestamp": "1970-01-01T00:00:00Z",
         "SignatureVersion": "1",
         "Signature": "EXAMPLE",

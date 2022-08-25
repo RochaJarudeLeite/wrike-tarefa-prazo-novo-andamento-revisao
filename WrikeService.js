@@ -92,17 +92,18 @@ async function getContact(contactId) {
 async function createTaskComment(taskId, comment, isPlainText = false) {
     // form data payload
     let formData = new FormData();
-    formData.append('text', JSON.stringify(comment));
-    formData.append('isPlainText', isPlainText);
+    formData.append('text', comment);
+    formData.append('plainText', JSON.stringify(isPlainText));
     let config = {
         method: 'post',
         headers: {
             Authorization: 'Bearer ' + wrikeToken,
+            'Content-Type': 'multipart/form-data',
             ...formData.getHeaders()
         },
         data: formData
     }
-    let url = `https://www.wrike.com/api/v4/tasks/${taskId}`
+    let url = `https://www.wrike.com/api/v4/tasks/${taskId}/comments`
     try {
         const response = await axios(url, config).then((response) => {
             return response
