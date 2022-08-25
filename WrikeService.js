@@ -1,5 +1,6 @@
 import {wrikeToken} from './WrikeAuth.js'
 import fetch from 'node-fetch'
+import FormData from 'form-data';
 import axios from "axios";
 
 const novajusIdCustomFieldId = "IEABJD3YJUADBUZU";
