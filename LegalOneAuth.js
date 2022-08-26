@@ -14,7 +14,7 @@ async function GetLegalOneSecret() {
         return null
     } else {
         console.log("LegalOne secret retrieved");
-        return secretResponse.THOMSON_REUTERS_AUTH;
+        return secretResponse.THOMSON_REUTERS_TOKEN;
     }
 }
 
